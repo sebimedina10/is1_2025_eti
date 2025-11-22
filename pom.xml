@@ -82,7 +82,14 @@
       <version>${junit.jupiter.version}</version>
       <scope>test</scope>
     </dependency>
+    
+    <dependency>
+      <groupId>com.github.spullara.mustache.java</groupId>
+      <artifactId>compiler</artifactId>
+      <version>0.9.10</version>
+    </dependency>
   </dependencies>
+
 
   <build>
     <plugins>
