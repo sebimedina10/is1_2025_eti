@@ -294,12 +294,19 @@ public class App {
             }
         });
 
-    // GET: Muestra la página del formulario al usuario para crear un nuevo docente.
+    // GET: SIRVE PARA OBTENER O SOLICITAR DATOS AL SERVIDOR SIN CAMBIAR NADA. 
+    //Muestra la página del formulario al usuario para crear un nuevo docente.
     // No procesa datos, sirve para mostrar mensajes de error y de éxito al cargar al usuario.
+     //Retorna la página HTML completa.
         get("/docente/new", (req, res) -> {
+            //model es el contenido y view es la plantilla o vista. 
+            //model contiene la información. Necesitamos un map porque luego para renderizar
+            //se busca la clave ej: "errorMessagge" y se reemplaza por el marcador {{errorMessage}} en HTML.
         Map<String, Object> model = new HashMap<>();
         // Manejar mensajes de éxito o error si se redirige a esta página
+        // recupera el texto que está después del error=
         String errorMessage = req.queryParams("error");
+        //si se encontró el error se guarda en el modelo bajo la clave errorMesage.
         if (errorMessage != null && !errorMessage.isEmpty()) {
             model.put("errorMessage", errorMessage);
         }
@@ -308,8 +315,14 @@ public class App {
             model.put("successMessage", successMessage);
         }
         // Renderiza la plantilla del formulario de docente
+        // el ModelAndView le prepara al MustacheTemplateEngine() cuales son los datos a renderizar.
         return new ModelAndView(model, "docente_form.mustache");
+        //Toma model y la plantilla. El motor Mustache ensambla y genera 
+        //una página HTML completa lista para ser mostrada
     }, new MustacheTemplateEngine());
+    //finaliza la funcion lambda definida al inicio
+    //Reemplaza los valores de los marcadores {{clave}} por los datos del modelo y
+    //hace el HTML final.
 
 
     // POST: Recibe los datos que el usuario escribio en el formulario para
@@ -345,9 +358,8 @@ public class App {
             docente.set("nombre", nombre);
             docente.set("email", email);
         
-
             docente.saveIt();
-            
+        
             res.status(201); // Código de estado HTTP 201 (Created) para una creación exitosa.
             // Redirige al formulario con un mensaje de éxito
             res.redirect("/docente/new?Message=Docente registrado correctamente.");
