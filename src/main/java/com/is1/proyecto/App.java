@@ -157,9 +157,10 @@ public class App {
         }, new MustacheTemplateEngine()); // Especifica el motor de plantillas para esta ruta.
 
 
-        // --- Rutas POST para manejar envíos de formularios y APIs ---
-
+        //El objetivo del POST es recibir los datos que el usuario ingresó en el formulario 
+        //(el que devolvió el GET) y guardarlos en la base de datos.
         // POST: Maneja el envío del formulario de creación de nueva cuenta.
+        //Req contiene toda la información enviada por el cliente en el formulario.
         post("/user/new", (req, res) -> {
             String name = req.queryParams("name");
             String password = req.queryParams("password");
@@ -293,11 +294,12 @@ public class App {
                 return objectMapper.writeValueAsString(Map.of("error", "Error interno al registrar usuario: " + e.getMessage()));
             }
         });
-
+    //Métodos de HTTP protocolo para transferir info entre servidor y cliente.
+    //Get y Post son tipo de Request.
     // GET: SIRVE PARA OBTENER O SOLICITAR DATOS AL SERVIDOR SIN CAMBIAR NADA. 
+    //PARÁMETROS EN LA URL.
     //Muestra la página del formulario al usuario para crear un nuevo docente.
-    // No procesa datos, sirve para mostrar mensajes de error y de éxito al cargar al usuario.
-     //Retorna la página HTML completa.
+    // No debe procesar datos, sirve para mostrar mensajes de error y de éxito al cargar al usuario.
         get("/docente/new", (req, res) -> {
             //model es el contenido y view es la plantilla o vista. 
             //model contiene la información. Necesitamos un map porque luego para renderizar
@@ -306,7 +308,7 @@ public class App {
         // Manejar mensajes de éxito o error si se redirige a esta página
         // recupera el texto que está después del error=
         String errorMessage = req.queryParams("error");
-        //si se encontró el error se guarda en el modelo bajo la clave errorMesage.
+        //si se encontró error se guarda en el modelo bajo la clave errorMesage.
         if (errorMessage != null && !errorMessage.isEmpty()) {
             model.put("errorMessage", errorMessage);
         }
@@ -327,7 +329,8 @@ public class App {
 
     // POST: Recibe los datos que el usuario escribio en el formulario para
     //cargarlo en la base de datos. 
-
+    //ENVÍA DATOS AL SERVIDOR A TRAVÉS DEL BODY.
+    
     //patrón PRG: Post/Redirect/Get:
     // El usuario llena el formulario y hace submit: POST.
     //El servidor procesa datos y guarda en BD, luego hace redirect a GET.
@@ -361,7 +364,7 @@ public class App {
             docente.saveIt();
         
             res.status(201); // Código de estado HTTP 201 (Created) para una creación exitosa.
-            // Redirige al formulario con un mensaje de éxito
+            // Redirige al formulario con un parámetro Message (de éxito) para que se pueda mostrar.
             res.redirect("/docente/new?Message=Docente registrado correctamente.");
             return null;
 
