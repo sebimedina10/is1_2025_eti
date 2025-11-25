@@ -340,21 +340,40 @@ public class App {
             //res (Response) respuesta permite configurar lo que se enviará al cliente ya sea redireccionar, cambiar código de estado, enviar texto o HTML, 
         post("/docente/new", (req, res) -> {
         try {
-
             //Recibe los parámetros del formulario.
             String dni = req.queryParams("dni");
             String apellido = req.queryParams("apellido");
             String nombre = req.queryParams("nombre");
             String email = req.queryParams("email");
 
-            // Validación 
+            //Se debe hacer la validación aquí correspondiente.
+            
             //Se indica obligatoriedad en los campos del formulario en el docente_form.mustache pero puede ser vulnerada.
             //Por ende también realizamos el chequeo aquí para que no ingresen datos vacíos.
             //Lo ponemos también en el html (Frontend) para evitar recargar la página.
             if (dni == null || dni.isEmpty() || apellido == null || apellido.isEmpty() || nombre == null || nombre.isEmpty() || email == null || email.isEmpty()) {
-                res.redirect("/docente/new?error=DNI, Apellido, Nombre, y Email son requeridos.");
+                //Esto lo va a recuperar el get y lo depositará en errorMessage
+                res.redirect("/docente/new?error=DNI,+Apellido,+Nombre,+y+Email+son+requeridos.");
+            //no retorna nada 
             return null;
             }
+
+          // DNI duplicado 
+        Docente dniExistente = Docente.findFirst("dni = ?", dni);
+        if (dniExistente != null) {
+            res.redirect("/docente/new?error=DNI+ya+registrado.");
+            return null;
+        }
+
+        // Email duplicado 
+        Docente emailExistente = Docente.findFirst("email = ?", email);
+        if (emailExistente != null) {
+            res.redirect("/docente/new?error=email+ya+registrado.");
+            return null;
+        }
+        //La validación de un 
+        // correo eléctronico correcto se realiza en form.
+
             Docente docente = new Docente();
             docente.set("dni", dni);
             docente.set("apellido", apellido);
@@ -370,7 +389,6 @@ public class App {
 
         } catch (Exception e) {
             System.err.println("Error al registrar el docente: " + e.getMessage());
-            // Redirige de vuelta al formulario con un mensaje de error
             e.printStackTrace(); // Imprime el stack trace para depuración.
             res.status(500); // Código de estado HTTP 500 (Internal Server Error).
             res.redirect("/docente/new?error=Error al registrar docente: " + e.getMessage());
